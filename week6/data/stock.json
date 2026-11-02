@@ -1,0 +1,122 @@
+[
+  {
+    "id": 1,
+    "nama": "Indomie Goreng Spesial",
+    "kategori": "makanan",
+    "stok": 8,
+    "minStok": 3,
+    "satuan": "Bungkus",
+    "lokasi": "Dus Bawah Meja",
+    "icon": "🍜"
+  },
+  {
+    "id": 2,
+    "nama": "Air Galon Mineral 19L",
+    "kategori": "makanan",
+    "stok": 1,
+    "minStok": 1,
+    "satuan": "Galon",
+    "lokasi": "Sudut Kamar",
+    "icon": "💧"
+  },
+  {
+    "id": 3,
+    "nama": "Beras Ramos 5kg",
+    "kategori": "makanan",
+    "stok": 2,
+    "minStok": 2,
+    "satuan": "Kg",
+    "lokasi": "Dapur Bersama",
+    "icon": "🍚"
+  },
+  {
+    "id": 4,
+    "nama": "Telur Ayam Negeri",
+    "kategori": "makanan",
+    "stok": 3,
+    "minStok": 4,
+    "satuan": "Butir",
+    "lokasi": "Kulkas Bersama",
+    "icon": "🥚"
+  },
+  {
+    "id": 5,
+    "nama": "Sabun Mandi Cair 450ml",
+    "kategori": "mandi",
+    "stok": 1,
+    "minStok": 1,
+    "satuan": "Botol",
+    "lokasi": "Rak Kamar Mandi",
+    "icon": "🧼"
+  },
+  {
+    "id": 6,
+    "nama": "Deterjen Bubuk Daia 850g",
+    "kategori": "mandi",
+    "stok": 0,
+    "minStok": 1,
+    "satuan": "Bungkus",
+    "lokasi": "Keranjang Cuci",
+    "icon": "🧺"
+  },
+  {
+    "id": 7,
+    "nama": "Shampoo Anti Ketombe 160ml",
+    "kategori": "mandi",
+    "stok": 2,
+    "minStok": 1,
+    "satuan": "Botol",
+    "lokasi": "Rak Kamar Mandi",
+    "icon": "🧴"
+  },
+  {
+    "id": 8,
+    "nama": "Pasta Gigi Herbal 190g",
+    "kategori": "mandi",
+    "stok": 1,
+    "minStok": 1,
+    "satuan": "Tube",
+    "lokasi": "Wastafel",
+    "icon": "🪥"
+  },
+  {
+    "id": 9,
+    "nama": "Minyak Kayu Putih 60ml",
+    "kategori": "p3k",
+    "stok": 1,
+    "minStok": 1,
+    "satuan": "Botol",
+    "lokasi": "Kotak Meja Belajar",
+    "icon": "🩹"
+  },
+  {
+    "id": 10,
+    "nama": "Paracetamol 500mg Strip",
+    "kategori": "p3k",
+    "stok": 6,
+    "minStok": 2,
+    "satuan": "Tablet",
+    "lokasi": "Kotak P3K",
+    "icon": "💊"
+  },
+  {
+    "id": 11,
+    "nama": "Kantong Sampah Hitam",
+    "kategori": "kebersihan",
+    "stok": 5,
+    "minStok": 3,
+    "satuan": "Lembar",
+    "lokasi": "Bawah Lemari",
+    "icon": "🗑️"
+  },
+  {
+    "id": 12,
+    "nama": "Cairan Pembersih Lantai Wipol",
+    "kategori": "kebersihan",
+    "stok": 1,
+    "minStok": 1,
+    "satuan": "Pouch",
+    "lokasi": "Sudut Kamar Mandi",
+    "icon": "🧹"
+  }
+]
