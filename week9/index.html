@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="id" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>StokKos.id - Week 9: Laravel + CRUD + Database (Sprint 07)</title>
+  <!-- Tailwind CSS via CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Plus Jakarta Sans', sans-serif; }
+    .font-mono { font-family: 'JetBrains Mono', monospace; }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .animate-modal { animation: fadeIn 0.25s ease-out forwards; }
+  </style>
+</head>
+<body class="bg-slate-900 text-slate-100 min-h-screen flex flex-col antialiased selection:bg-red-600 selection:text-white">
+
+  <!-- ======================================================== -->
+  <!-- 1. HEADER & NAVBAR LARAVEL (HTML Semantik)              -->
+  <!-- ======================================================== -->
+  <header class="bg-slate-950/90 border-b border-slate-800 sticky top-0 z-40 backdrop-blur-md">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-18 py-3 flex items-center justify-between">
+      
+      <!-- Brand & Framework Badge -->
+      <div class="flex items-center gap-3">
+        <!-- Logo Laravel Red -->
+        <div class="w-10 h-10 rounded-xl bg-red-600/20 border border-red-500/40 flex items-center justify-center text-red-500 text-xl font-bold shadow-lg shadow-red-600/10">
+          <svg class="w-6 h-6" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M21.5 5.5l-9.5-5.5-9.5 5.5v13l9.5 5.5 9.5-5.5v-13zm-9.5-3.3l7.4 4.3-7.4 4.3-7.4-4.3 7.4-4.3zm-8 6.5l7 4v8.5l-7-4v-8.5zm9 12.5v-8.5l7-4v8.5l-7 4z"/>
+          </svg>
+        </div>
+        <div>
+          <h1 class="text-base sm:text-lg font-black tracking-tight text-white flex items-center gap-2">
+            StokKos<span class="text-red-500">.id</span>
+            <span class="text-[10px] uppercase font-bold tracking-widest px-2 py-0.5 rounded-full bg-red-500/20 text-red-400 border border-red-500/30">
+              Laravel &bull; Sprint 07
+            </span>
+          </h1>
+          <p class="text-[11px] text-slate-400">Database &bull; Migration &bull; Eloquent ORM &bull; CRUD</p>
+        </div>
+      </div>
+
+      <!-- Live Database Status Indicator -->
+      <div class="hidden sm:flex items-center gap-3">
+        <div class="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-slate-900 border border-slate-700/80 text-xs font-mono">
+          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+          <span class="text-slate-300">DB:</span>
+          <span class="text-emerald-400 font-bold">stokkos_db (Connected)</span>
+        </div>
+        <button onclick="resetToInitialData()" class="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 text-xs text-slate-300 font-medium transition cursor-pointer" title="Jalankan db:seed">
+          🌱 Refresh Seeder
+        </button>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- ======================================================== -->
+  <!-- 2. MAIN CONTENT                                          -->
+  <!-- ======================================================== -->
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-grow space-y-8 w-full">
+
+    <!-- HERO SECTION: ALUR LARAVEL DATABASE (Slide 1 & 8) -->
+    <section class="bg-gradient-to-r from-slate-950 via-slate-900 to-red-950/40 p-6 sm:p-8 rounded-3xl border border-slate-800 shadow-2xl">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+        
+        <div class="lg:col-span-8 space-y-3">
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-red-500/10 border border-red-500/30 text-red-400 text-xs font-bold">
+            <span>⚙️</span> Web Programming &bull; Pertemuan 9: LARAVEL + CRUD + DATABASE
+          </div>
+          <h2 class="text-2xl sm:text-3xl lg:text-4xl font-black text-white tracking-tight">
+            Transisi dari PHP Manual ke <span class="text-transparent bg-clip-text bg-gradient-to-r from-red-500 via-rose-400 to-amber-400">Laravel Framework</span>
+          </h2>
+          <p class="text-xs sm:text-sm text-slate-300 leading-relaxed max-w-2xl">
+            Data kebutuhan kos <strong>tidak lagi ditulis manual (hard-coded)</strong> di file HTML/JS, melainkan dikelola secara dinamis melalui <strong>Database MySQL/SQLite</strong>, didefinisikan lewat <strong>Migration</strong>, dimanipulasi dengan <strong>Eloquent ORM</strong>, dan ditampilkan ke tampilan web melalui operasi <strong>CRUD (Create, Read, Update, Delete)</strong>.
+          </p>
+
+          <!-- Alur Eksekusi (Slide 8) -->
+          <div class="flex flex-wrap items-center gap-1.5 pt-2 text-[11px] font-mono text-slate-400">
+            <span class="px-2.5 py-1 rounded-lg bg-slate-800 border border-slate-700 text-slate-300">User</span>
+            <span>&rarr;</span>
+            <span class="px-2.5 py-1 rounded-lg bg-red-950/60 border border-red-800/60 text-red-300">Route (web.php)</span>
+            <span>&rarr;</span>
+            <span class="px-2.5 py-1 rounded-lg bg-blue-950/60 border border-blue-800/60 text-blue-300">Model (Barang.php)</span>
+            <span>&rarr;</span>
+            <span class="px-2.5 py-1 rounded-lg bg-emerald-950/60 border border-emerald-800/60 text-emerald-300">Eloquent ORM</span>
+            <span>&rarr;</span>
+            <span class="px-2.5 py-1 rounded-lg bg-purple-950/60 border border-purple-800/60 text-purple-300">Database Table</span>
+            <span>&rarr;</span>
+            <span class="px-2.5 py-1 rounded-lg bg-amber-950/60 border border-amber-800/60 text-amber-300">View (Blade)</span>
+          </div>
+        </div>
+
+        <!-- Tombol Tambah Barang Cepat (Sesuai Slide 12) -->
+        <div class="lg:col-span-4 bg-slate-950/80 p-5 rounded-2xl border border-slate-800 flex flex-col justify-between space-y-4">
+          <div class="space-y-1">
+            <span class="text-xs font-mono text-slate-400 uppercase tracking-wider block">Task 03 Implementation</span>
+            <h4 class="text-base font-bold text-white">Kelola Data Barang Kos</h4>
+            <p class="text-xs text-slate-400">Tambah data baru ke database tabel <code class="text-red-400">barangs</code> menggunakan Eloquent <code class="text-red-400">Barang::create()</code>.</p>
+          </div>
+          <button onclick="openModalTambah()" class="w-full bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-500 hover:to-rose-500 text-white font-bold py-3 px-4 rounded-xl shadow-lg shadow-red-600/30 transition transform active:scale-95 flex items-center justify-center gap-2 cursor-pointer text-sm">
+            <span class="text-lg">+</span>
+            <span>Tambah Barang Baru (Create)</span>
+          </button>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ======================================================== -->
+    <!-- SECTION TABEL DATA & CRUD MANAGEMENT (Slide 12 & 13)     -->
+    <!-- ======================================================== -->
+    <section class="bg-slate-950 rounded-3xl border border-slate-800 p-6 sm:p-8 space-y-6 shadow-xl">
+      
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-800">
+        <div>
+          <h3 class="text-xl font-black text-white flex items-center gap-2">
+            <span>📦</span> Data Inventaris Kos (Table: <code class="text-red-400 font-mono text-lg">barangs</code>)
+          </h3>
+          <p class="text-xs text-slate-400 mt-0.5">
+            Hasil pembacaan data nyata dari database via <code class="text-amber-300 font-mono">$barangs = Barang::all();</code>
+          </p>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <span id="data-count-badge" class="px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/30 text-blue-400 text-xs font-mono font-bold">
+            Total: 4 Barang
+          </span>
+          <button onclick="openModalTambah()" class="bg-blue-600 hover:bg-blue-500 text-white font-bold px-4 py-2 rounded-xl text-xs transition flex items-center gap-1.5 shadow-sm cursor-pointer">
+            <span>+</span> <span>Tambah Barang</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- TABEL DATA (Slide 12 & 13: Read) -->
+      <div class="overflow-x-auto rounded-2xl border border-slate-800 bg-slate-900/50">
+        <table class="w-full text-left text-sm text-slate-300">
+          <thead class="bg-slate-900 text-xs uppercase font-mono tracking-wider text-slate-400 border-b border-slate-800">
+            <tr>
+              <th scope="col" class="py-3.5 px-4 text-center w-16">No</th>
+              <th scope="col" class="py-3.5 px-4">Nama Barang</th>
+              <th scope="col" class="py-3.5 px-4">Kategori</th>
+              <th scope="col" class="py-3.5 px-4 text-center">Stok</th>
+              <th scope="col" class="py-3.5 px-6">Deskripsi Kebutuhan</th>
+              <th scope="col" class="py-3.5 px-4 text-center w-40">Aksi (CRUD)</th>
+            </tr>
+          </thead>
+          <tbody id="table-body" class="divide-y divide-slate-800/80 font-normal">
+            <!-- Diisi secara dinamis dari database -->
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Empty State -->
+      <div id="table-empty" class="hidden text-center py-12 border border-dashed border-slate-800 rounded-2xl">
+        <p class="text-slate-400 text-sm">Tidak ada data di tabel database. Silakan klik tombol <strong>+ Tambah Barang</strong>.</p>
+      </div>
+
+    </section>
+
+    <!-- ======================================================== -->
+    <!-- ELOQUENT QUERY LOGGER (Untuk Bahan Presentasi/Demo)      -->
+    <!-- ======================================================== -->
+    <section class="bg-slate-950 p-6 rounded-3xl border border-slate-800 space-y-4">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <span class="text-lg">⚡</span>
+          <h4 class="text-sm font-bold text-white font-mono">Live Eloquent ORM &amp; SQL Query Inspector</h4>
+        </div>
+        <span class="text-[11px] text-slate-500 font-mono">Eksekusi Model &bull; Slide 6 &amp; 11</span>
+      </div>
+      <div id="query-log" class="bg-black/70 p-4 rounded-xl border border-slate-800/80 font-mono text-xs text-emerald-400 overflow-x-auto">
+        <span class="text-slate-500">// Menjalankan:</span> $barangs = App\Models\Barang::all(); <br>
+        <span class="text-slate-500">// Database Query:</span> SELECT * FROM `barangs` ORDER BY `id` ASC;
+      </div>
+    </section>
+
+    <!-- ======================================================== -->
+    <!-- STRUKTUR FILE & KODE LARAVEL (Task 01, 02, 03)           -->
+    <!-- ======================================================== -->
+    <section class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      
+      <!-- Card 1: Migration (Task 01) -->
+      <div class="bg-slate-950 p-5 rounded-2xl border border-slate-800 space-y-3">
+        <div class="flex items-center justify-between border-b border-slate-800 pb-2">
+          <span class="text-xs font-bold text-red-400 font-mono">01. Migration File</span>
+          <span class="text-[10px] text-slate-500 font-mono">database/migrations</span>
+        </div>
+        <p class="text-xs text-slate-400 leading-relaxed">
+          Mendefinisikan skema tabel database melalui kode PHP tanpa perlu membuka phpMyAdmin secara manual:
+        </p>
+        <pre class="bg-slate-900 p-3 rounded-xl text-[11px] font-mono text-slate-300 overflow-x-auto border border-slate-800">Schema::create('barangs', function (Blueprint $table) {
+    $table->id();
+    $table->string('nama');
+    $table->string('kategori');
+    $table->integer('stok');
+    $table->string('satuan');
+    $table->text('deskripsi');
+    $table->timestamps();
+});</pre>
+      </div>
+
+      <!-- Card 2: Model Eloquent (Task 02) -->
+      <div class="bg-slate-950 p-5 rounded-2xl border border-slate-800 space-y-3">
+        <div class="flex items-center justify-between border-b border-slate-800 pb-2">
+          <span class="text-xs font-bold text-blue-400 font-mono">02. Eloquent Model</span>
+          <span class="text-[10px] text-slate-500 font-mono">app/Models/Barang.php</span>
+        </div>
+        <p class="text-xs text-slate-400 leading-relaxed">
+          Merepresentasikan tabel database ke dalam kelas objek PHP lengkap dengan properti <code class="text-blue-400">$fillable</code>:
+        </p>
+        <pre class="bg-slate-900 p-3 rounded-xl text-[11px] font-mono text-slate-300 overflow-x-auto border border-slate-800">namespace App\Models;
+use Illuminate\Database\Eloquent\Model;
+
+class Barang extends Model {
+    protected $fillable = [
+        'nama', 'kategori', 
+        'stok', 'satuan', 'deskripsi'
+    ];
+}</pre>
+      </div>
+
+      <!-- Card 3: Route & Controller (Task 03) -->
+      <div class="bg-slate-950 p-5 rounded-2xl border border-slate-800 space-y-3">
+        <div class="flex items-center justify-between border-b border-slate-800 pb-2">
+          <span class="text-xs font-bold text-emerald-400 font-mono">03. Routes &amp; CRUD</span>
+          <span class="text-[10px] text-slate-500 font-mono">routes/web.php</span>
+        </div>
+        <p class="text-xs text-slate-400 leading-relaxed">
+          Mengatur endpoint URL untuk menerima request dan memanggil method Eloquent ORM:
+        </p>
+        <pre class="bg-slate-900 p-3 rounded-xl text-[11px] font-mono text-slate-300 overflow-x-auto border border-slate-800">// Read
+Route::get('/barangs', [BarangController::class, 'index']);
+// Create
+Route::post('/barangs', [BarangController::class, 'store']);
+// Update
+Route::put('/barangs/{id}', [BarangController::class, 'update']);
+// Delete
+Route::delete('/barangs/{id}', [BarangController::class, 'destroy']);</pre>
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- ======================================================== -->
+  <!-- MODAL CREATE (TAMBAH DATA - SLIDE 12 & 13)               -->
+  <!-- ======================================================== -->
+  <div id="modal-tambah" class="fixed inset-0 bg-black/75 backdrop-blur-xs flex items-center justify-center p-4 z-50 hidden">
+    <div class="bg-slate-900 border border-slate-800 rounded-3xl max-w-lg w-full p-6 sm:p-8 space-y-5 shadow-2xl relative animate-modal">
+      <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+        <h3 class="text-lg font-bold text-white flex items-center gap-2">
+          <span>✨</span> Tambah Barang Baru (Create)
+        </h3>
+        <button onclick="closeModalTambah()" class="text-slate-400 hover:text-white text-xl font-bold cursor-pointer">&times;</button>
+      </div>
+
+      <form id="form-tambah" onsubmit="handleCreate(event)" class="space-y-4">
+        <div>
+          <label class="block text-xs font-mono font-bold text-slate-400 uppercase mb-1">Nama Barang</label>
+          <input type="text" id="add-nama" required placeholder="Contoh: Indomie Goreng / Sabun Mandi" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-sm text-white focus:outline-none focus:border-red-500 font-medium">
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-mono font-bold text-slate-400 uppercase mb-1">Kategori</label>
+            <select id="add-kategori" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-sm text-white focus:outline-none focus:border-red-500 font-medium">
+              <option value="Makanan">🍜 Makanan & Minuman</option>
+              <option value="Mandi">🧼 Mandi & Cuci</option>
+              <option value="Kebersihan">🧹 Kebersihan</option>
+              <option value="P3K">💊 Obat & P3K</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-mono font-bold text-slate-400 uppercase mb-1">Stok &amp; Satuan</label>
+            <div class="flex gap-2">
+              <input type="number" id="add-stok" min="0" value="5" required class="w-1/2 px-3 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-sm text-white focus:outline-none focus:border-red-500">
+              <input type="text" id="add-satuan" value="Pcs" required class="w-1/2 px-3 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-sm text-white focus:outline-none focus:border-red-500">
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-mono font-bold text-slate-400 uppercase mb-1">Deskripsi Kebutuhan</label>
+          <textarea id="add-deskripsi" rows="3" required placeholder="Jelaskan kebutuhan barang kos ini..." class="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-sm text-white focus:outline-none focus:border-red-500 font-medium"></textarea>
+        </div>
+
+        <div class="flex justify-end gap-3 pt-2">
+          <button type="button" onclick="closeModalTambah()" class="px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-bold transition cursor-pointer">Batal</button>
+          <button type="submit" class="px-5 py-2.5 rounded-xl bg-red-600 hover:bg-red-500 text-white text-xs font-bold transition shadow-md shadow-red-600/30 cursor-pointer">
+            Simpan ke Database (Barang::create)
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ======================================================== -->
+  <!-- MODAL EDIT (UPDATE DATA - SLIDE 12 & 13)                 -->
+  <!-- ======================================================== -->
+  <div id="modal-edit" class="fixed inset-0 bg-black/75 backdrop-blur-xs flex items-center justify-center p-4 z-50 hidden">
+    <div class="bg-slate-900 border border-slate-800 rounded-3xl max-w-lg w-full p-6 sm:p-8 space-y-5 shadow-2xl relative animate-modal">
+      <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+        <h3 class="text-lg font-bold text-white flex items-center gap-2">
+          <span>✏️</span> Edit Data Barang (Update)
+        </h3>
+        <button onclick="closeModalEdit()" class="text-slate-400 hover:text-white text-xl font-bold cursor-pointer">&times;</button>
+      </div>
+
+      <form id="form-edit" onsubmit="handleUpdate(event)" class="space-y-4">
+        <input type="hidden" id="edit-id">
+
+        <div>
+          <label class="block text-xs font-mono font-bold text-slate-400 uppercase mb-1">Nama Barang</label>
+          <input type="text" id="edit-nama" required class="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-sm text-white focus:outline-none focus:border-blue-500 font-medium">
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-mono font-bold text-slate-400 uppercase mb-1">Kategori</label>
+            <select id="edit-kategori" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-sm text-white focus:outline-none focus:border-blue-500 font-medium">
+              <option value="Makanan">🍜 Makanan & Minuman</option>
+              <option value="Mandi">🧼 Mandi & Cuci</option>
+              <option value="Kebersihan">🧹 Kebersihan</option>
+              <option value="P3K">💊 Obat & P3K</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-mono font-bold text-slate-400 uppercase mb-1">Stok &amp; Satuan</label>
+            <div class="flex gap-2">
+              <input type="number" id="edit-stok" min="0" required class="w-1/2 px-3 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-sm text-white focus:outline-none focus:border-blue-500">
+              <input type="text" id="edit-satuan" required class="w-1/2 px-3 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-sm text-white focus:outline-none focus:border-blue-500">
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-mono font-bold text-slate-400 uppercase mb-1">Deskripsi Kebutuhan</label>
+          <textarea id="edit-deskripsi" rows="3" required class="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-sm text-white focus:outline-none focus:border-blue-500 font-medium"></textarea>
+        </div>
+
+        <div class="flex justify-end gap-3 pt-2">
+          <button type="button" onclick="closeModalEdit()" class="px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-bold transition cursor-pointer">Batal</button>
+          <button type="submit" class="px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold transition shadow-md shadow-blue-600/30 cursor-pointer">
+            Perbarui Data (Update)
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ======================================================== -->
+  <!-- 4. FOOTER                                                -->
+  <!-- ======================================================== -->
+  <footer class="bg-slate-950 border-t border-slate-800 py-8 px-4 text-center text-xs text-slate-400 mt-auto">
+    <div class="max-w-7xl mx-auto space-y-2">
+      <p class="font-bold text-slate-200">StokKos.id &bull; Web Programming Week 9 (Sprint 07)</p>
+      <p>Modul Pertemuan 9: Laravel Framework &bull; Database Migration &bull; Eloquent Model &bull; CRUD Operations.</p>
+      <p class="text-slate-500">&copy; 2026 Laboratorium Informatika &bull; Universitas Muhammadiyah Malang</p>
+    </div>
+  </footer>
+
+  <!-- SCRIPT LOGIKA DATABASE ELOQUENT & CRUD SIMULATOR -->
+  <script>
+    // Data Awal Seeder (Database Default)
+    const SEEDER_DATA = [
+      {
+        id: 1,
+        nama: "Indomie Goreng Spesial",
+        kategori: "Makanan",
+        stok: 8,
+        satuan: "Bungkus",
+        deskripsi: "Stok makanan darurat lembur kuliah, disimpan di kardus bawah meja belajar.",
+        created_at: "2026-11-17 01:10:00"
+      },
+      {
+        id: 2,
+        nama: "Air Galon Mineral 19L",
+        kategori: "Makanan",
+        stok: 1,
+        satuan: "Galon",
+        deskripsi: "Kebutuhan air minum harian kos, wajib restok jika tersisa kurang dari 1 galon.",
+        created_at: "2026-11-17 01:12:00"
+      },
+      {
+        id: 3,
+        nama: "Deterjen Bubuk Daia 850g",
+        kategori: "Mandi",
+        stok: 0,
+        satuan: "Bungkus",
+        deskripsi: "Keperluan mencuci pakaian mingguan di kamar mandi bersama, saat ini habis total.",
+        created_at: "2026-11-17 01:15:00"
+      },
+      {
+        id: 4,
+        nama: "Paracetamol 500mg Strip",
+        kategori: "P3K",
+        stok: 6,
+        satuan: "Tablet",
+        deskripsi: "Persediaan obat demam dan sakit kepala darurat di kotak obat P3K kamar kos.",
+        created_at: "2026-11-17 01:20:00"
+      }
+    ];
+
+    // Ambil data dari localStorage atau default seeder
+    let dbBarangs = JSON.parse(localStorage.getItem('stokkos_laravel_db')) || SEEDER_DATA;
+
+    function saveDB() {
+      localStorage.setItem('stokkos_laravel_db', JSON.stringify(dbBarangs));
+    }
+
+    function renderTable() {
+      const tbody = document.getElementById('table-body');
+      const emptyNotice = document.getElementById('table-empty');
+      const countBadge = document.getElementById('data-count-badge');
+      tbody.innerHTML = '';
+
+      countBadge.textContent = `Total: ${dbBarangs.length} Barang`;
+
+      if (dbBarangs.length === 0) {
+        emptyNotice.classList.remove('hidden');
+        return;
+      }
+      emptyNotice.classList.add('hidden');
+
+      dbBarangs.forEach((b, index) => {
+        const tr = document.createElement('tr');
+        tr.className = "hover:bg-slate-800/40 transition border-b border-slate-800/60";
+
+        // Badge stok warna
+        let stockBadge = `<span class="px-2.5 py-1 rounded-full text-xs font-bold font-mono bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">${b.stok} ${b.satuan}</span>`;
+        if (b.stok === 0) {
+          stockBadge = `<span class="px-2.5 py-1 rounded-full text-xs font-bold font-mono bg-rose-500/20 text-rose-400 border border-rose-500/30">Habis (0)</span>`;
+        } else if (b.stok <= 2) {
+          stockBadge = `<span class="px-2.5 py-1 rounded-full text-xs font-bold font-mono bg-amber-500/20 text-amber-400 border border-amber-500/30">${b.stok} ${b.satuan}</span>`;
+        }
+
+        tr.innerHTML = `
+          <td class="py-4 px-4 text-center font-mono text-xs text-slate-500">${index + 1}</td>
+          <td class="py-4 px-4 font-bold text-white">${b.nama}</td>
+          <td class="py-4 px-4"><span class="px-2 py-0.5 rounded-lg bg-slate-800 text-slate-300 text-xs border border-slate-700">${b.kategori}</span></td>
+          <td class="py-4 px-4 text-center">${stockBadge}</td>
+          <td class="py-4 px-6 text-slate-400 text-xs leading-relaxed max-w-xs">${b.deskripsi}</td>
+          <td class="py-4 px-4 text-center">
+            <div class="flex items-center justify-center gap-2">
+              <button onclick="openModalEdit(${b.id})" class="px-3 py-1.5 rounded-lg bg-blue-600/20 hover:bg-blue-600 text-blue-300 hover:text-white border border-blue-500/30 text-xs font-semibold transition cursor-pointer">
+                Edit
+              </button>
+              <button onclick="handleDelete(${b.id})" class="px-3 py-1.5 rounded-lg bg-red-600/20 hover:bg-red-600 text-red-300 hover:text-white border border-red-500/30 text-xs font-semibold transition cursor-pointer">
+                Hapus
+              </button>
+            </div>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    // CREATE (Tambah Barang)
+    function openModalTambah() {
+      document.getElementById('modal-tambah').classList.remove('hidden');
+    }
+    function closeModalTambah() {
+      document.getElementById('modal-tambah').classList.add('hidden');
+      document.getElementById('form-tambah').reset();
+    }
+    function handleCreate(e) {
+      e.preventDefault();
+      const nama = document.getElementById('add-nama').value;
+      const kategori = document.getElementById('add-kategori').value;
+      const stok = parseInt(document.getElementById('add-stok').value) || 0;
+      const satuan = document.getElementById('add-satuan').value;
+      const deskripsi = document.getElementById('add-deskripsi').value;
+
+      const newId = dbBarangs.length > 0 ? Math.max(...dbBarangs.map(i => i.id)) + 1 : 1;
+      const newBarang = {
+        id: newId,
+        nama,
+        kategori,
+        stok,
+        satuan,
+        deskripsi,
+        created_at: new Date().toISOString().slice(0, 19).replace('T', ' ')
+      };
+
+      dbBarangs.push(newBarang);
+      saveDB();
+      renderTable();
+      closeModalTambah();
+
+      // Update Query Inspector
+      document.getElementById('query-log').innerHTML = `
+        <span class="text-slate-500">// Eloquent CREATE:</span> App\\Models\\Barang::create(['nama' => '${nama}', 'stok' => ${stok}, 'deskripsi' => '...']);<br>
+        <span class="text-slate-500">// SQL Executed:</span> INSERT INTO \`barangs\` (\`nama\`, \`kategori\`, \`stok\`, \`satuan\`, \`deskripsi\`) VALUES ('${nama}', '${kategori}', ${stok}, '${satuan}', '${deskripsi}');
+      `;
+    }
+
+    // UPDATE (Edit Barang)
+    function openModalEdit(id) {
+      const item = dbBarangs.find(b => b.id === id);
+      if (!item) return;
+
+      document.getElementById('edit-id').value = item.id;
+      document.getElementById('edit-nama').value = item.nama;
+      document.getElementById('edit-kategori').value = item.kategori;
+      document.getElementById('edit-stok').value = item.stok;
+      document.getElementById('edit-satuan').value = item.satuan;
+      document.getElementById('edit-deskripsi').value = item.deskripsi;
+
+      document.getElementById('modal-edit').classList.remove('hidden');
+
+      // Update Query Inspector
+      document.getElementById('query-log').innerHTML = `
+        <span class="text-slate-500">// Eloquent READ Single:</span> $barang = App\\Models\\Barang::find(${id});<br>
+        <span class="text-slate-500">// SQL Executed:</span> SELECT * FROM \`barangs\` WHERE \`id\` = ${id} LIMIT 1;
+      `;
+    }
+    function closeModalEdit() {
+      document.getElementById('modal-edit').classList.add('hidden');
+    }
+    function handleUpdate(e) {
+      e.preventDefault();
+      const id = parseInt(document.getElementById('edit-id').value);
+      const index = dbBarangs.findIndex(b => b.id === id);
+      if (index === -1) return;
+
+      dbBarangs[index].nama = document.getElementById('edit-nama').value;
+      dbBarangs[index].kategori = document.getElementById('edit-kategori').value;
+      dbBarangs[index].stok = parseInt(document.getElementById('edit-stok').value) || 0;
+      dbBarangs[index].satuan = document.getElementById('edit-satuan').value;
+      dbBarangs[index].deskripsi = document.getElementById('edit-deskripsi').value;
+
+      saveDB();
+      renderTable();
+      closeModalEdit();
+
+      // Update Query Inspector
+      document.getElementById('query-log').innerHTML = `
+        <span class="text-slate-500">// Eloquent UPDATE:</span> $barang->update(['nama' => '${dbBarangs[index].nama}', 'stok' => ${dbBarangs[index].stok}]);<br>
+        <span class="text-slate-500">// SQL Executed:</span> UPDATE \`barangs\` SET \`nama\` = '${dbBarangs[index].nama}', \`stok\` = ${dbBarangs[index].stok} WHERE \`id\` = ${id};
+      `;
+    }
+
+    // DELETE (Hapus Barang)
+    function handleDelete(id) {
+      const item = dbBarangs.find(b => b.id === id);
+      if (!item) return;
+
+      if (confirm(`Yakin ingin menghapus barang "${item.nama}" dari database?`)) {
+        dbBarangs = dbBarangs.filter(b => b.id !== id);
+        saveDB();
+        renderTable();
+
+        // Update Query Inspector
+        document.getElementById('query-log').innerHTML = `
+          <span class="text-slate-500">// Eloquent DELETE:</span> App\\Models\\Barang::destroy(${id});<br>
+          <span class="text-slate-500">// SQL Executed:</span> DELETE FROM \`barangs\` WHERE \`id\` = ${id};
+        `;
+      }
+    }
+
+    // Reset Seeder
+    function resetToInitialData() {
+      if (confirm("Reset ulang data tabel ke contoh bawaan seeder?")) {
+        dbBarangs = JSON.parse(JSON.stringify(SEEDER_DATA));
+        saveDB();
+        renderTable();
+        document.getElementById('query-log').innerHTML = `
+          <span class="text-slate-500">// Database Seeder:</span> Artisan::call('migrate:fresh --seed');<br>
+          <span class="text-slate-500">// Status:</span> 4 baris data berhasil di-generate kembali ke tabel \`barangs\`.
+        `;
+      }
+    }
+
+    // Render Awal
+    document.addEventListener('DOMContentLoaded', () => {
+      renderTable();
+    });
+  </script>
+</body>
+</html>
